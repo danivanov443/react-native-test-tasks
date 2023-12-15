@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import * as Yup from 'yup';
 import {
@@ -64,6 +65,7 @@ function ImageUploadForm(): React.JSX.Element {
     data.append('name', values.name);
     data.append('description', values.description);
     // После этого data можно отправить в запросе POST с 'Content-Type': 'multipart/form-data; ' в headers
+    Alert.alert('Сообщение', 'Данные успешно отправлены');
   };
 
   const {handleChange, handleBlur, handleSubmit, values, errors, touched} =
