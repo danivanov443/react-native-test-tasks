@@ -6,6 +6,8 @@ import {
   Dimensions,
   StyleSheet,
   ScrollView,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
 
 const data: string[] = [
@@ -14,9 +16,11 @@ const data: string[] = [
   'https://www.gstatic.com/webp/gallery3/3.sm.png',
 ];
 
+const {width: screenWidth} = Dimensions.get('window');
+
 const ImageCarouselScreen = (): React.JSX.Element => {
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.view}>
       <Carousel images={data} />
     </View>
   );
@@ -30,10 +34,9 @@ const Carousel = ({images}: CarouselProps): React.JSX.Element => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const {width: screenWidth} = Dimensions.get('window');
   const totalImages = images.length;
 
-  const handleScrollEnd = (event: any) => {
+  const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / screenWidth);
 
@@ -69,7 +72,7 @@ const Carousel = ({images}: CarouselProps): React.JSX.Element => {
           <Image
             key={index}
             source={{uri: item}}
-            style={{width: screenWidth, height: 200}}
+            style={styles.carouselImage}
             resizeMode={'contain'}
           />
         ))}
@@ -80,9 +83,14 @@ const Carousel = ({images}: CarouselProps): React.JSX.Element => {
 };
 
 const styles = StyleSheet.create({
+  view: {flex: 1},
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  carouselImage: {
+    width: screenWidth,
+    height: 200,
   },
   indexText: {
     marginTop: 10,

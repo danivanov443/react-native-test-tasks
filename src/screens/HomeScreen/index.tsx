@@ -1,41 +1,34 @@
-import React, {useCallback} from 'react';
-import {Button, View} from 'react-native';
+import React from 'react';
+import {Button, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 function HomeScreen({navigation}: Props): React.JSX.Element {
-  const backgroundStyle = {
-    backgroundColor: 'white',
-    flex: 1,
-  };
-
-  const navigateToFlexCard = useCallback(
-    () => navigation.navigate('FlexCard'),
-    [navigation],
-  );
-
-  const navigateToImageCarousel = useCallback(
-    () => navigation.navigate('ImageCarousel'),
-    [navigation],
-  );
-
-  const navigateToImageForm = useCallback(
-    () => navigation.navigate('ImageForm'),
-    [navigation],
-  );
-
   return (
-    <View style={backgroundStyle}>
-      <Button onPress={navigateToFlexCard} title={'Task 1 - Flex Card'} />
+    <View style={styles.container}>
       <Button
-        onPress={navigateToImageCarousel}
+        onPress={() => navigation.navigate('FlexCard')}
+        title={'Task 1 - Flex Card'}
+      />
+      <Button
+        onPress={() => navigation.navigate('ImageCarousel')}
         title={'Task 2 - Image Carousel'}
       />
-      <Button onPress={navigateToImageForm} title={'Task 3 - Image Form'} />
+      <Button
+        onPress={() => navigation.navigate('ImageForm')}
+        title={'Task 3 - Image Form'}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+  },
+});
 
 export default HomeScreen;

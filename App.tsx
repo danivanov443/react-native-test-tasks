@@ -1,10 +1,12 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import HomeScreen from './src/screens/HomeScreen';
-import FlexCardScreen from './src/screens/FlexCardScreen';
-import ImageCarouselScreen from './src/screens/ImageCarouselScreen';
-import ImageFormScreen from './src/screens/ImageFormScreen';
+import {
+  FlexCardScreen,
+  HomeScreen,
+  ImageCarouselScreen,
+  ImageFormScreen,
+} from './src/screens';
 
 export type RootStackParamList = {
   Home: undefined;

@@ -6,7 +6,6 @@ import {
   Text,
   TextInput,
   View,
-  ViewStyle,
 } from 'react-native';
 
 function FlexCardScreen(): React.JSX.Element {
@@ -68,13 +67,12 @@ function CardList({
   containerWidth,
   usePercentileWidth,
 }: CardListProps): React.JSX.Element {
-  const cardListStyle: ViewStyle = {
-    ...styles.cardList,
-    width: usePercentileWidth ? '70%' : containerWidth,
-  };
-
   return (
-    <View style={cardListStyle}>
+    <View
+      style={[
+        styles.cardList,
+        {width: usePercentileWidth ? '70%' : containerWidth},
+      ]}>
       {data.map((cardItem, index) => (
         <Card height={cardItem} key={index} />
       ))}

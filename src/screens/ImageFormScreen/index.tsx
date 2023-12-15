@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+
 import * as Yup from 'yup';
 import {
   ImageLibraryOptions,
@@ -36,13 +37,8 @@ const validationSchema = Yup.object().shape({
 });
 
 function ImageFormScreen(): React.JSX.Element {
-  const backgroundStyle = {
-    backgroundColor: 'white',
-    flex: 1,
-  };
-
   return (
-    <View style={backgroundStyle}>
+    <View style={styles.backgroundStyle}>
       <ImageUploadForm />
     </View>
   );
