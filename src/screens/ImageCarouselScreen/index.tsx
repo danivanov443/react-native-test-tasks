@@ -5,10 +5,10 @@ import {
   Text,
   Dimensions,
   StyleSheet,
-  FlatList,
+  ScrollView,
 } from 'react-native';
 
-const images: string[] = [
+const data: string[] = [
   'https://www.gstatic.com/webp/gallery3/1.sm.png',
   'https://www.gstatic.com/webp/gallery3/2.sm.png',
   'https://www.gstatic.com/webp/gallery3/3.sm.png',
@@ -17,7 +17,7 @@ const images: string[] = [
 const ImageCarouselScreen = (): React.JSX.Element => {
   return (
     <View style={{flex: 1}}>
-      <Carousel images={images} />
+      <Carousel images={data} />
     </View>
   );
 };
@@ -28,24 +28,23 @@ interface CarouselProps {
 
 const Carousel = ({images}: CarouselProps): React.JSX.Element => {
   const [currentIndex, setCurrentIndex] = useState(1);
-  const flatListRef = useRef<FlatList<string>>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const {width: screenWidth} = Dimensions.get('window');
   const totalImages = images.length;
 
-  const handleMomentumScrollEnd = (event: any) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+  const handleScrollEnd = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / screenWidth);
+
     if (index === 0) {
-      flatListRef.current?.scrollToIndex({
-        index: totalImages,
+      scrollViewRef.current?.scrollTo({
+        x: screenWidth * totalImages,
         animated: false,
       });
       setCurrentIndex(totalImages);
     } else if (index === totalImages + 1) {
-      flatListRef.current?.scrollToIndex({
-        index: 1,
-        animated: false,
-      });
+      scrollViewRef.current?.scrollTo({x: screenWidth, animated: false});
       setCurrentIndex(1);
     } else {
       setCurrentIndex(index);
@@ -54,28 +53,27 @@ const Carousel = ({images}: CarouselProps): React.JSX.Element => {
 
   const adjustedImages = [images[images.length - 1], ...images, images[0]];
 
-  const renderItem = ({item}: {item: string}) => (
-    <Image source={{uri: item}} style={{width: screenWidth, height: 200}} />
-  );
-
   return (
     <View style={styles.container}>
-      <FlatList
-        ref={flatListRef}
+      <ScrollView
+        ref={scrollViewRef}
         horizontal
         pagingEnabled
-        data={adjustedImages}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={renderItem}
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleMomentumScrollEnd}
-        getItemLayout={(_, index) => ({
-          length: screenWidth,
-          offset: screenWidth * index,
-          index,
-        })}
-        initialScrollIndex={1}
-      />
+        onMomentumScrollEnd={handleScrollEnd}
+        contentContainerStyle={{width: screenWidth * adjustedImages.length}}
+        onContentSizeChange={() => {
+          scrollViewRef.current?.scrollTo({x: screenWidth, animated: false});
+        }}>
+        {adjustedImages.map((item, index) => (
+          <Image
+            key={index}
+            source={{uri: item}}
+            style={{width: screenWidth, height: 200}}
+            resizeMode={'contain'}
+          />
+        ))}
+      </ScrollView>
       <Text style={styles.indexText}>{`${currentIndex}`}</Text>
     </View>
   );
