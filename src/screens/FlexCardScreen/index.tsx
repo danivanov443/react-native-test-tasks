@@ -1,7 +1,28 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 function FlexCardScreen(): React.JSX.Element {
+  const [containerWidth, setContainerWidth] = useState(200);
+  const [usePercentileWidth, setUsePercentileWidth] = useState(false);
+
+  const handleWidthChange = useCallback(
+    (text: string) => {
+      if (text) {
+        setContainerWidth(Number(text));
+      } else {
+        setContainerWidth(0);
+      }
+    },
+    [setContainerWidth],
+  );
+
   const cardItems: Array<number> = [150, 150, 200, 200, 100, 100];
 
   const backgroundStyle = {
@@ -10,19 +31,49 @@ function FlexCardScreen(): React.JSX.Element {
   };
 
   return (
-    <View style={backgroundStyle}>
-      <CardList data={cardItems} />
-    </View>
+    <ScrollView style={backgroundStyle}>
+      <View style={styles.inputWrapper}>
+        <Text>{'Использовать ширину 70% от экрана:'}</Text>
+        <Switch
+          onChange={() => setUsePercentileWidth(prev => !prev)}
+          value={usePercentileWidth}
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text>{'Ширина контейнера:'}</Text>
+        <TextInput
+          onChangeText={handleWidthChange}
+          value={containerWidth.toString()}
+          inputMode="numeric"
+        />
+      </View>
+      <CardList
+        data={cardItems}
+        containerWidth={containerWidth}
+        usePercentileWidth={usePercentileWidth}
+      />
+    </ScrollView>
   );
 }
 
 type CardListProps = {
   data: Array<number>;
+  containerWidth: number;
+  usePercentileWidth: boolean;
 };
 
-function CardList({data}: CardListProps): React.JSX.Element {
+function CardList({
+  data,
+  containerWidth,
+  usePercentileWidth,
+}: CardListProps): React.JSX.Element {
+  const cardListStyle = [
+    styles.cardList,
+    {width: usePercentileWidth ? '70%' : containerWidth},
+  ];
+
   return (
-    <View style={styles.cardList}>
+    <View style={cardListStyle}>
       {data.map((cardItem, index) => (
         <Card height={cardItem} key={index} />
       ))}
@@ -50,13 +101,18 @@ const styles = StyleSheet.create({
     margin: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 12,
   },
   cardList: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: '90%', // карточки адаптируются под любую ширину контейнера
     backgroundColor: 'aqua',
+    margin: 6,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 6,
   },
 });
 
