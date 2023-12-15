@@ -1,110 +1,95 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {Image, StyleSheet, View, useWindowDimensions} from 'react-native';
-import {data} from './data';
-import Animated, {
-  useSharedValue,
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  interpolate,
-  useAnimatedRef,
-} from 'react-native-reanimated';
+import React, {useState, useRef} from 'react';
+import {
+  View,
+  Image,
+  Text,
+  Dimensions,
+  StyleSheet,
+  FlatList,
+} from 'react-native';
 
-type SpacerItem = {key: 'spacer-left' | 'spacer-right'};
+const images: string[] = [
+  'https://www.gstatic.com/webp/gallery3/1.sm.png',
+  'https://www.gstatic.com/webp/gallery3/2.sm.png',
+  'https://www.gstatic.com/webp/gallery3/3.sm.png',
+];
 
-function ImageCarouselScreen(): React.JSX.Element {
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const interval = useRef<NodeJS.Timeout>();
-  const initialData: (string | SpacerItem)[] = [
-    {key: 'spacer-left'},
-    ...data,
-    {key: 'spacer-right'},
-  ];
-  const [newData] = useState(initialData);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-  const {width} = useWindowDimensions();
-  const SIZE = width * 0.8;
-  const SPACER = (width - SIZE) / 2;
-  const x = useSharedValue(0);
-  const offSet = useSharedValue(0);
-
-  const onScroll = useAnimatedScrollHandler({
-    onScroll: event => {
-      x.value = event.contentOffset.x;
-    },
-  });
-
-  useEffect(() => {
-    if (isAutoPlay) {
-      let _offSet = offSet.value;
-      interval.current = setInterval(() => {
-        if (_offSet >= Math.floor(SIZE * (data.length - 1) - 10)) {
-          _offSet = 0;
-        } else {
-          _offSet = Math.floor(_offSet + SIZE);
-        }
-        scrollViewRef.current?.scrollTo({x: _offSet, y: 0});
-      }, 2000);
-    } else {
-      clearInterval(interval.current);
-    }
-  }, [SIZE, SPACER, isAutoPlay, offSet.value, scrollViewRef]);
+const ImageCarouselScreen = (): React.JSX.Element => {
   return (
-    <View>
-      <Animated.ScrollView
-        ref={scrollViewRef}
-        onScroll={onScroll}
-        onScrollBeginDrag={() => {
-          setIsAutoPlay(false);
-        }}
-        onMomentumScrollEnd={e => {
-          offSet.value = e.nativeEvent.contentOffset.x;
-          setIsAutoPlay(true);
-        }}
-        scrollEventThrottle={16}
-        decelerationRate="fast"
-        snapToInterval={SIZE}
-        horizontal
-        bounces={false}
-        showsHorizontalScrollIndicator={false}>
-        {newData.map((item, index) => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const style = useAnimatedStyle(() => {
-            const scale = interpolate(
-              x.value,
-              [(index - 2) * SIZE, (index - 1) * SIZE, index * SIZE],
-              [0.88, 1, 0.88],
-            );
-            return {
-              transform: [{scale}],
-            };
-          });
-          if (!item) {
-            return <View style={{width: SPACER}} key={index} />;
-          }
-          return (
-            <View style={{width: SIZE}} key={index}>
-              <Animated.View style={[styles.imageContainer, style]}>
-                <Image source={{uri: item as string}} style={styles.image} />
-              </Animated.View>
-            </View>
-          );
-        })}
-      </Animated.ScrollView>
+    <View style={{flex: 1}}>
+      <Carousel images={images} />
     </View>
   );
+};
+
+interface CarouselProps {
+  images: Array<string>;
 }
 
-export default ImageCarouselScreen;
+const Carousel = ({images}: CarouselProps): React.JSX.Element => {
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const flatListRef = useRef<FlatList<string>>(null);
+
+  const {width: screenWidth} = Dimensions.get('window');
+  const totalImages = images.length;
+
+  const handleMomentumScrollEnd = (event: any) => {
+    const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+    if (index === 0) {
+      flatListRef.current?.scrollToIndex({
+        index: totalImages,
+        animated: false,
+      });
+      setCurrentIndex(totalImages);
+    } else if (index === totalImages + 1) {
+      flatListRef.current?.scrollToIndex({
+        index: 1,
+        animated: false,
+      });
+      setCurrentIndex(1);
+    } else {
+      setCurrentIndex(index);
+    }
+  };
+
+  const adjustedImages = [images[images.length - 1], ...images, images[0]];
+
+  const renderItem = ({item}: {item: string}) => (
+    <Image source={{uri: item}} style={{width: screenWidth, height: 200}} />
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        ref={flatListRef}
+        horizontal
+        pagingEnabled
+        data={adjustedImages}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderItem}
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
+        getItemLayout={(_, index) => ({
+          length: screenWidth,
+          offset: screenWidth * index,
+          index,
+        })}
+        initialScrollIndex={1}
+      />
+      <Text style={styles.indexText}>{`${currentIndex}`}</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    borderRadius: 18,
-    overflow: 'hidden',
-    backgroundColor: 'pink',
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  image: {
-    width: '100%',
-    height: undefined,
-    aspectRatio: 16 / 9,
+  indexText: {
+    marginTop: 10,
+    fontSize: 18,
   },
 });
+
+export default ImageCarouselScreen;
