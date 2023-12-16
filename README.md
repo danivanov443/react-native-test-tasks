@@ -1,79 +1,92 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Тестовые задания по React Native
 
-# Getting Started
+## Ссылка на видео с демонстрацией работы:
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+https://drive.google.com/file/d/1I1ss0H_yig17Sp1kqKBjcglQ6-Sl03cD/view?usp=sharing
 
-## Step 1: Start the Metro Server
+## Ответ на теоретический вопрос третьей задачи:
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+_Назвать все известные инструменты управление приложением и как оно осуществляется в вашем понимании, + и - каждого инструмента_
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Инструменты управления состоянием приложения служат для реализации централизованного хранения данных для упрощения доступа к ним из любой части приложения (и избавления от проп дриллинга), разделения логики обработки данных от компонентов интерфейса, облегчении обработки сложных изменений глобального состояния приложения. Известные инструменты управления состоянием приложения: Context API, Redux, MobX, Recoil.
 
-```bash
-# using npm
-npm start
+**Context API**
 
-# OR using Yarn
-yarn start
-```
+Плюсы:
 
-## Step 2: Start your Application
+- Встроен в React, не требует дополнительной установки
+- Прост в использовании
+- Подходит для хранения и передачи констант и редко изменяемых значений
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+Минусы:
 
-### For Android
+- Изменение контекста приводит к обновлению всех его дочерних компонентов, что может вызвать лишние ререндеры и проблемы с производительностью
+- Плохо масштабируется для крупных приложений
 
-```bash
-# using npm
-npm run android
+**Redux**
 
-# OR using Yarn
-yarn android
-```
+Плюсы:
 
-### For iOS
+- Популярен, широко используется
+- Состояние хранится в глобальном объекте store, который служит единым источником правды
+- Однонаправленный поток данных, реализует архитектуру Flux
+- Расширяем за счёт middleware (таких как Thunk и Saga)
 
-```bash
-# using npm
-npm run ios
+Минусы:
 
-# OR using Yarn
-yarn ios
-```
+- Много boilerplate кода (использование Redux Toolkit значительно снижает его количество)
+- Может быть сложен в понимании
+- В сложных проектах с большим количеством экшенов и редьюсеров, а также использованием сложных middleware, может привести к неявным зависимостями между состоянием и частями приложения, что может усложнить отладку
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+**MobX**
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+Плюсы:
 
-## Step 3: Modifying your App
+- Меньше boilerplate кода по сравнению с Redux
+- Реактивен, изменения данных отслеживаются и автоматически вызывают обновление компонентов, в которых они используются
+- Поддерживает мутабельность состояния
 
-Now that you have successfully run the app, let's modify it.
+Минусы:
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+- Автоматическое отслеживание изменений воспринимается как "магия" для менее опытных разработчиков, что приводит к меньшей степени понимания механизмов его работы
+- Не имеет жёстких рамок или указаний по использованию, что может вызвать расхождения в больших проектах и командах без должной коммуникации
+- Меньше материалов и поддержки сообществом разработчиков по сравнению с Redux
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+**Recoil**
 
-## Congratulations! :tada:
+Плюсы:
 
-You've successfully run and modified your React Native App. :partying_face:
+- Разрабатывается Facebook, разработчиками React, и предназначен в первую очередь для работы с ним
+- Состояние разделено на атомы, что обеспечивает атомарность его обновлений
+- Прост в использовании и понимании, минимальный boilerplate
 
-### Now what?
+Минусы:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+- Более молодой state manager по сравнению с MobX и Redux, меньше инструментов и библиотек для работы с ним
+- Узконаправленный по сравнению с другими стейт менеджерами, разрабатывается в первую очередь под React
+- Всё ещё активно разрабатывается, большие обновления могут привести к необходимости значительно обновлять существующий код
 
-# Troubleshooting
+## Список заданий
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### Задача первая:
 
-# Learn More
+Есть список объектов карточек, который нужно отобразить пользователю. Как константу нужно использовать список
+[150, 150, 200, 200, 100, 100]. Блоки карточек заполняют пространство между друг-другом, оставляя небольшой отсуп(10 px например). При этом самый большой блок увеличивает остальные блоки в ряду. Тем самым, если карточка с высотой 100px попадает в ряд с карточкой высотой в 200px, то она растягивается на размер 200, тоесть на высоту самой большой карточки в ряду
 
-To learn more about React Native, take a look at the following resources:
+Кол-во столбиков с картами должно меняться динамически, в зависимости от размера представления-родителя, тоесть использование dimensions экрана не допустимо
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+При повороте устройства все должно хорошо работать
+
+### Задача вторая:
+
+Сделать бесконечную прокрути массива картинок используя reanimated
+
+Снизу выводить индикатор того, на каком по счету элементу, в исходном списке, находиться бесконечная прокрутка
+
+### Задача третья:
+
+Назвать все известные инструменты управление приложением и как оно осуществляется в вашем понимании, + и - каждого инструмента
+
+Продемонстрировать умение создавать формы, сделать простую форму с вводом картинки(и ее подготовки для отправки на сервер по end point'у), имени, описания. Валидация следующая: картинка обязательна, имя только из букв кириллицы и без пробелов, описание минимум 10 символов
+
+Поля ввода стилизуются по желанию
